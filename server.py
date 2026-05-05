@@ -111,7 +111,10 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         super().end_headers()
 
-with socketserver.TCPServer(("", PORT), MyHandler) as httpd:
+class ReusableTCPServer(socketserver.TCPServer):
+    allow_reuse_address = True
+
+with ReusableTCPServer(("", PORT), MyHandler) as httpd:
     print(f"🚀 服务器启动成功！")
     print(f"📂 项目目录：{BASE_DIR}")
     print(f"🌐 本地访问：http://localhost:{PORT}")
