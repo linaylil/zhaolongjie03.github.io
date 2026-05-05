@@ -273,11 +273,8 @@ function showToast(msg) {
   toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 2500);
 }
 
-// ===== Local server base URL =====
-const LOCAL_API = 'http://localhost:3000';
-function isLocalMode() {
-  return location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-}
+// ===== API base URL (relative path, works on both Vercel and localhost) =====
+const API_BASE = '/api';
 
 // ===== File Upload via local server (auto git push via SSH) =====
 async function uploadToServer(filepath, base64Content, commitMsg) {
