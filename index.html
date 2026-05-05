@@ -18,6 +18,7 @@
         <li><a href="#experience">实习经历</a></li>
         <li><a href="#education">教育背景</a></li>
         <li><a href="#skills">个人技能</a></li>
+        <li><a href="#resume">我的简历</a></li>
         <li><a href="#contact">联系我</a></li>      </ul>
       <div class="nav-toggle" id="navToggle">
         <span></span><span></span><span></span>
@@ -30,12 +31,15 @@
     <div class="hero-bg"></div>
     <div class="hero-content">
       <div class="hero-photo-wrapper">
-        <div class="hero-photo" id="heroPhotoContainer" style="cursor:pointer;" title="点击上传照片">
+        <div class="hero-photo" id="heroPhotoContainer" title="点击上传照片">
           <img src="image.png" alt="赵龙杰" id="profilePhoto" style="transform:rotate(-90deg);transform-origin:center;" onerror="this.style.display='none'; document.getElementById('photoPlaceholder').style.display='flex';" />
           <div class="photo-placeholder" id="photoPlaceholder">
             <i class="fas fa-user"></i>
           </div>
-          <div id="uploadHint" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:white;font-size:0.72rem;text-align:center;padding:6px 0;border-radius:0 0 50% 50%;opacity:0;transition:opacity 0.2s;">点击上传照片</div>
+          <div id="uploadHint" style="position:absolute;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;flex-direction:column;gap:6px;border-radius:50%;cursor:pointer;">
+            <i class="fas fa-camera" style="font-size:1.8rem;color:white;"></i>
+            <span style="font-size:0.75rem;color:white;">点击上传</span>
+          </div>
         </div>
         <input type="file" id="photoUpload" accept="image/*" style="display:none;">
         <div class="hero-badge">产品经理</div>
@@ -47,16 +51,17 @@
           专注于<strong>商业化流量产品</strong>与<strong>大模型产品</strong>两大方向。曾在快手主导广告流量策略，在百度深耕大模型全链路效果迭代，具备从 0 到 1 落地 AI 产品的完整经验，擅长数据驱动决策与跨部门协同推进。
         </p>
         <div class="hero-tags">
-          <span class="tag" title="专注于广告流量、用户增长与商业化产品策略，具备从 0 到 1 的商业化产品落地经验"><i class="fas fa-ad"></i> 商业化</span>
-          <span class="tag" title="深入理解 LLM 原理，精通 RAG、SFT/DPO、Prompt Engineering，具备大模型产品全链路迭代经验"><i class="fas fa-brain"></i> 大模型技术</span>
-          <span class="tag" title="精通 SQL/Python 数据分析，擅长 A/B 实验设计、漏斗归因与指标体系搭建"><i class="fas fa-chart-bar"></i> 数据分析</span>
-          <span class="tag" title="熟悉信息流广告生态，擅长流量分配策略、精细化人群调控与用户体验兑换"><i class="fas fa-random"></i> 流量策略</span>
-          <span class="tag" title="摩羯座（12月22日 - 1月19日）：脚踏实地、目标感强、自律且有责任心" style="background:rgba(255,101,132,0.15);border-color:rgba(255,101,132,0.3);color:#ff6584;">🪐 摩羯座</span>
-          <span class="tag" title="ENFJ - 主人公型人格：热情、有感召力、善于激励他人、天生的领导者与协调者" style="background:rgba(255,193,7,0.15);border-color:rgba(255,193,7,0.3);color:#e6a800;">✨ ENFJ</span>
+          <span class="tag" data-tip="负责广告流量分配与商业化产品策略，在保障用户体验的前提下最大化商业收益"><i class="fas fa-ad"></i> 商业化</span>
+          <span class="tag" data-tip="基于大语言模型（LLM）的产品设计与迭代，精通 RAG、SFT/DPO 数据构造与 Prompt Engineering"><i class="fas fa-brain"></i> 大模型技术</span>
+          <span class="tag" data-tip="通过 SQL/Python 进行数据清洗、归因分析与 A/B 实验设计，用数据驱动产品决策"><i class="fas fa-chart-bar"></i> 数据分析</span>
+          <span class="tag" data-tip="信息流场域的流量分配机制设计，通过精细化人群干预实现体验与消耗的最优兑换"><i class="fas fa-random"></i> 流量策略</span>
+          <span class="tag" data-tip="摩羯座（12.22-1.19）土象星座，务实稳健、目标感强、自律有耐心，擅长在逆境中坚持到底">🪐 摩羯座</span>
+          <span class="tag" data-tip="ENFJ 主人公型 · E外向 N直觉 F情感 J判断 — 热情有感召力，善于激励他人，天生的领导者与协调者">✨ ENFJ</span>
         </div>
         <div class="hero-btns">
           <a href="#experience" class="btn btn-primary">查看经历</a>
           <a href="#contact" class="btn btn-outline">联系我</a>
+          <button id="heroBtnResume" class="btn btn-outline" onclick="document.getElementById('resumeViewBtn') && document.getElementById('resumeViewBtn').click()" style="display:none;"><i class="fas fa-file-pdf" style="margin-right:6px;"></i>查看简历</button>
         </div>
       </div>
     </div>
@@ -341,7 +346,7 @@
       <p class="section-subtitle">记录生活，留存美好</p>
       <!-- 管理员上传按钮（仅管理员可见） -->
       <div id="photoUploadArea" style="display:none;text-align:center;margin-bottom:1.5rem;">
-        <label for="galleryUpload" class="btn btn-outline" style="cursor:pointer;"><i class="fas fa-plus" style="margin-right:6px;"></i>上传照片到画廊</label>
+        <label for="galleryUpload" class="btn" style="cursor:pointer;background:var(--primary);color:white;box-shadow:0 4px 16px rgba(37,99,235,0.3);"><i class="fas fa-plus" style="margin-right:6px;"></i>上传照片到画廊</label>
         <input type="file" id="galleryUpload" accept="image/*" multiple style="display:none;">
         <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:8px;">照片将同步到 GitHub，所有人可见</p>
       </div>
@@ -387,7 +392,7 @@
           <button id="resumeViewBtn" class="btn btn-primary"><i class="fas fa-file-pdf" style="margin-right:6px;"></i>在线查看简历</button>
           <a id="resumeDownloadBtn" class="btn btn-outline" style="text-decoration:none;"><i class="fas fa-download" style="margin-right:6px;"></i>下载简历</a>
         </div>
-        <label id="resumeUploadBtn" for="resumeUpload" class="btn btn-outline" style="cursor:pointer;display:none;"><i class="fas fa-upload" style="margin-right:6px;"></i>上传简历 PDF</label>
+        <label id="resumeUploadBtn" for="resumeUpload" class="btn" style="cursor:pointer;display:none;background:var(--primary);color:white;box-shadow:0 4px 16px rgba(37,99,235,0.35);"><i class="fas fa-upload" style="margin-right:6px;"></i>上传简历 PDF</label>
         <input type="file" id="resumeUpload" accept="application/pdf" style="display:none;">
       </div>
       <p id="resumeEmpty" style="color:var(--text-secondary);font-size:0.9rem;margin-top:1rem;">简历即将上线，敬请期待</p>

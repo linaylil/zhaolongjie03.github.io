@@ -49,7 +49,7 @@ sections.forEach(section => sectionObserver.observe(section));
 
 // Add active style via JS
 const activeStyle = document.createElement('style');
-activeStyle.textContent = `.nav-links a.active { color: var(--primary) !important; background: rgba(108,99,255,0.1) !important; }`;
+activeStyle.textContent = `.nav-links a.active { color: var(--primary) !important; background: rgba(37,99,235,0.1) !important; }`;
 document.head.appendChild(activeStyle);
 
 // ===== Scroll Animation (Fade In) =====
@@ -174,7 +174,7 @@ if (photoUpload) {
       height: ${size}px;
       left: ${Math.random() * 100}%;
       top: ${Math.random() * 100}%;
-      background: rgba(${Math.random() > 0.5 ? '108,99,255' : '255,101,132'}, ${Math.random() * 0.4 + 0.1});
+      background: rgba(${Math.random() > 0.5 ? '37,99,235' : '96,165,250'}, ${Math.random() * 0.4 + 0.1});
       animation-duration: ${Math.random() * 12 + 8}s;
       animation-delay: ${Math.random() * -15}s;
     `;
@@ -192,20 +192,26 @@ let GITHUB_TOKEN = localStorage.getItem('githubToken') || '';
 let isAdmin = localStorage.getItem('adminMode') === 'true';
 
 function applyAdminMode() {
-  // 头像上传
+  // codeflicker-fix: LOGIC-Issue-001/6j8ze6xujk15apwprboq - 改用 CSS hover 替代 JS 事件监听
   if (heroPhotoContainer) {
     heroPhotoContainer.style.cursor = isAdmin ? 'pointer' : 'default';
-    if (uploadHint) uploadHint.style.display = isAdmin ? 'block' : 'none';
+    const hint = document.getElementById('uploadHint');
+    if (hint) {
+      // 用 CSS class 控制是否启用 hover 效果
+      heroPhotoContainer.classList.toggle('admin-mode', isAdmin);
+      if (!isAdmin) hint.style.display = 'none';
+    }
   }
-  // 简历上传按钮
+  // 简历上传按钮（下方 section）
   const resumeUploadBtn = document.getElementById('resumeUploadBtn');
   if (resumeUploadBtn) resumeUploadBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+  // hero 区简历上传按钮（已移除）
   // 照片上传区域
   const photoUploadArea = document.getElementById('photoUploadArea');
   if (photoUploadArea) photoUploadArea.style.display = isAdmin ? 'block' : 'none';
   // 管理员状态指示
   const adminIndicator = document.getElementById('adminIndicator');
-  if (adminIndicator) adminIndicator.textContent = isAdmin ? '🔓 管理员' : '';
+  if (adminIndicator) adminIndicator.textContent = isAdmin ? '🔓 管理员模式' : '🔒 访客模式';
 }
 
 // 在页脚加管理员入口（隐藏式，三击触发）
@@ -214,10 +220,9 @@ let footerClickTimer = null;
 document.addEventListener('DOMContentLoaded', () => {
   const footer = document.querySelector('footer') || document.body;
   const adminTrigger = document.createElement('div');
-  adminTrigger.id = 'adminTrigger';
-  adminTrigger.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:9999;font-size:0.72rem;color:rgba(255,255,255,0.3);cursor:default;user-select:none;';
   adminTrigger.id = 'adminIndicator';
-  adminTrigger.textContent = '';
+  adminTrigger.style.cssText = 'position:fixed;bottom:12px;right:16px;z-index:9999;font-size:0.72rem;color:rgba(255,255,255,0.15);cursor:default;user-select:none;min-width:60px;min-height:20px;text-align:right;';
+  adminTrigger.textContent = isAdmin ? '🔓 管理员模式' : '🔒 访客模式';
   document.body.appendChild(adminTrigger);
 
   // 连续快速点击右下角3次进入管理员模式
@@ -286,8 +291,17 @@ function updateResumeUI(dataUrl) {
   const resumeViewBtn = document.getElementById('resumeViewBtn');
   const resumeDownloadBtn = document.getElementById('resumeDownloadBtn');
   const resumeEmpty = document.getElementById('resumeEmpty');
+  const heroBtnResume = document.getElementById('heroBtnResume');
   if (resumeSection) resumeSection.style.display = 'flex';
   if (resumeEmpty) resumeEmpty.style.display = 'none';
+  // hero 区显示查看简历按钮
+  if (heroBtnResume) {
+    heroBtnResume.style.display = 'inline-flex';
+    heroBtnResume.onclick = () => {
+      const win = window.open();
+      win.document.write(`<iframe src="${dataUrl}" style="width:100%;height:100vh;border:none;"></iframe>`);
+    };
+  }
   if (resumeViewBtn) {
     resumeViewBtn.onclick = () => {
       const win = window.open();
