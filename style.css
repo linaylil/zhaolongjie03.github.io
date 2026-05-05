@@ -856,8 +856,9 @@ button { -webkit-tap-highlight-color: transparent; }
   /* Timeline */
   .timeline { padding-left: 0; }
   .timeline-item { flex-direction: column; gap: 0; margin-bottom: 2rem; }
-  .timeline-marker { flex-direction: row; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
-  .timeline-line { width: 40px; height: 2px; min-height: unset; flex: 1; margin-top: 0; margin-left: 8px; background: linear-gradient(to right, rgba(108, 99, 255, 0.4), transparent); }
+  .timeline-marker { flex-direction: row; align-items: center; gap: 0; margin-bottom: 0.75rem; padding-top: 0; }
+  .timeline-dot { width: 16px; height: 16px; border-width: 2px; }
+  .timeline-line { width: 24px; height: 2px; min-height: unset; flex: none; margin-top: 0; margin-left: 0; background: linear-gradient(to right, rgba(108, 99, 255, 0.4), transparent); }
   .timeline-card { padding: 1.25rem; }
   .card-header { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
   .date-badge { align-self: flex-start; }
