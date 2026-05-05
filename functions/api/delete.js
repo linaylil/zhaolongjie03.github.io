@@ -1,11 +1,11 @@
 const GITHUB_REPO = 'linaylil/zhaolongjie03.github.io';
 const GITHUB_BRANCH = 'main';
 
-async function githubAPI(path, options = {}, env) {
-  const token = env.GITHUB_TOKEN;
+async function githubAPI(path, options = {}, token) {
   const headers = {
     'Authorization': `token ${token}`,
     'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'personal-website',
     ...options.headers
   };
   return fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
@@ -14,15 +14,15 @@ async function githubAPI(path, options = {}, env) {
   });
 }
 
-export async function onRequestPost({ request, env }) {
-  const token = env.GITHUB_TOKEN;
+export async function onRequestPost(context) {
+  const token = context.env.GITHUB_TOKEN;
   if (!token) {
     return new Response(JSON.stringify({ ok: false, error: 'GITHUB_TOKEN not configured' }), {
       status: 500, headers: { 'Content-Type': 'application/json' }
     });
   }
 
-  const body = await request.json();
+  const body = await context.request.json();
   const { path, message } = body;
 
   if (!path) {
@@ -32,7 +32,7 @@ export async function onRequestPost({ request, env }) {
   }
 
   try {
-    const checkRes = await githubAPI(path, {}, env);
+    const checkRes = await githubAPI(path, {}, token);
     if (!checkRes.ok) {
       return new Response(JSON.stringify({ ok: false, error: 'File not found' }), {
         status: 404, headers: { 'Content-Type': 'application/json' }
@@ -48,7 +48,7 @@ export async function onRequestPost({ request, env }) {
         sha: fileData.sha,
         branch: GITHUB_BRANCH
       })
-    }, env);
+    }, token);
 
     if (delRes.ok) {
       return new Response(JSON.stringify({ ok: true, msg: '已从 GitHub 删除' }), {
