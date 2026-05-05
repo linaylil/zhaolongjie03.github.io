@@ -325,12 +325,18 @@ function updateResumeUI(dataUrl) {
   if (isAdmin) addResumeDeleteBtn();
 }
 
+// ===== Local server base URL =====
+const LOCAL_API = 'http://localhost:3000';
+function isLocalMode() {
+  return location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+}
+
 // ===== File Upload via local server (auto git push via SSH) =====
 async function uploadToServer(filepath, base64Content, commitMsg) {
   if (filepath === '__update_content__') {
     try {
       const decoded = decodeURIComponent(escape(atob(base64Content)));
-      const response = await fetch('/api/update-content', {
+      const response = await fetch(LOCAL_API + '/api/update-content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: decoded, message: commitMsg })
@@ -339,11 +345,11 @@ async function uploadToServer(filepath, base64Content, commitMsg) {
       showToast(result.ok ? `✅ ${result.msg}` : `❌ 保存失败：${result.error || '未知错误'}`);
       return result.ok;
     } catch(e) {
-      showToast('❌ 无法连接本地服务器'); return false;
+      showToast('❌ 无法连接本地服务器，请访问 localhost:3000 并确保 server.py 正在运行'); return false;
     }
   }
   try {
-    const response = await fetch('/api/upload', {
+    const response = await fetch(LOCAL_API + '/api/upload', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path: filepath, content: base64Content, message: commitMsg })
@@ -352,14 +358,14 @@ async function uploadToServer(filepath, base64Content, commitMsg) {
     showToast(result.ok ? `✅ ${result.msg}` : `❌ 上传失败：${result.error || '未知错误'}`);
     return result.ok;
   } catch(e) {
-    showToast('❌ 无法连接本地服务器，请确保 server.py 正在运行'); return false;
+    showToast('❌ 无法连接本地服务器，请访问 localhost:3000 并确保 server.py 正在运行'); return false;
   }
 }
 
 // ===== Delete file via local server =====
 async function deleteFromServer(filepath, commitMsg) {
   try {
-    const response = await fetch('/api/delete', {
+    const response = await fetch(LOCAL_API + '/api/delete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path: filepath, message: commitMsg })
