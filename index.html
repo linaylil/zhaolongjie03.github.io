@@ -31,7 +31,7 @@
     <div class="hero-content">
       <div class="hero-photo-wrapper">
         <div class="hero-photo" id="heroPhotoContainer" title="点击上传照片">
-          <img src="photos/image.png" alt="赵龙杰" id="profilePhoto" style="transform:rotate(-90deg);transform-origin:center;" onerror="this.style.display='none'; document.getElementById('photoPlaceholder').style.display='flex';" />
+          <img src="photos/profile.jpg" alt="赵龙杰" id="profilePhoto" style="object-fit:cover;" onerror="this.style.display='none'; document.getElementById('photoPlaceholder').style.display='flex';" />
           <div class="photo-placeholder" id="photoPlaceholder">
             <i class="fas fa-user"></i>
           </div>
@@ -350,8 +350,8 @@
         <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:8px;">照片将同步到 GitHub，所有人可见</p>
       </div>
       <div class="photos-grid" id="photosGrid">
-        <div class="photo-item" data-github-file="image.png">
-          <img src="photos/image.png" alt="赵龙杰" onerror="this.parentElement.classList.add('no-photo')" style="object-fit:cover;" />
+        <div class="photo-item" data-github-file="profile.jpg">
+          <img src="photos/profile.jpg" alt="赵龙杰" onerror="this.parentElement.classList.add('no-photo')" style="object-fit:cover;" />
           <div class="photo-overlay">
             <p>我的照片</p>
           </div>
