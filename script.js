@@ -261,20 +261,23 @@ document.addEventListener('DOMContentLoaded', () => {
   if (savedResume) {
     updateResumeUI(savedResume);
   } else {
-    // 尝试从 GitHub Pages 加载简历
-    fetch('resume/赵龙杰-简历.pdf').then(r => {
-      if (r.ok) {
-        const blob = r.blob();
-        blob.then(b => {
-          const reader = new FileReader();
-          reader.onload = e => {
-            localStorage.setItem('resumePDF', e.target.result);
-            updateResumeUI(e.target.result);
-          };
-          reader.readAsDataURL(b);
-        });
-      }
-    }).catch(() => {});
+    // 通过 GitHub API 查找 resume 目录下的 PDF
+    fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/resume?ref=${GITHUB_BRANCH}`)
+      .then(r => r.json())
+      .then(files => {
+        const pdf = files.find(f => f.name.endsWith('.pdf'));
+        if (pdf) {
+          localStorage.setItem('resumeFileName', pdf.name);
+          fetch(pdf.download_url).then(r => r.blob()).then(b => {
+            const reader = new FileReader();
+            reader.onload = e => {
+              localStorage.setItem('resumePDF', e.target.result);
+              updateResumeUI(e.target.result);
+            };
+            reader.readAsDataURL(b);
+          });
+        }
+      }).catch(() => {});
   }
 });
 
@@ -502,7 +505,8 @@ if (resumeUpload) {
     reader.onload = async (evt) => {
       const dataUrl = evt.target.result;
       const base64 = dataUrl.split(',')[1];
-      const ok = await uploadToServer('resume/赵龙杰-简历.pdf', base64, 'Add resume PDF');
+      const resumeName = localStorage.getItem('resumeFileName') || '赵龙杰-简历.pdf';
+      const ok = await uploadToServer(`resume/${resumeName}`, base64, 'Add resume PDF');
       if (ok) {
         localStorage.setItem('resumePDF', dataUrl);
         updateResumeUI(dataUrl);
@@ -524,7 +528,8 @@ function addResumeDeleteBtn() {
   btn.innerHTML = '<i class="fas fa-trash" style="margin-right:4px;"></i>删除简历';
   btn.onclick = async () => {
     if (!confirm('确定要删除简历吗？')) return;
-    const ok = await deleteFromServer('resume/赵龙杰-简历.pdf', 'Delete resume PDF');
+    const resumeName = localStorage.getItem('resumeFileName') || '赵龙杰-简历.pdf';
+    const ok = await deleteFromServer(`resume/${resumeName}`, 'Delete resume PDF');
     if (ok) {
       localStorage.removeItem('resumePDF');
       resumeSection.style.display = 'none';

@@ -15,11 +15,15 @@ def git_push(filepath, message):
     """自动 git add, commit, push"""
     try:
         subprocess.run(['git', 'add', '-A'], cwd=BASE_DIR, capture_output=True, timeout=10)
-        subprocess.run(['git', 'commit', '-m', message], cwd=BASE_DIR, capture_output=True, timeout=10)
+        commit = subprocess.run(['git', 'commit', '-m', message], cwd=BASE_DIR, capture_output=True, timeout=10)
+        # commit 可能因为没有变更而失败，这是正常的
         result = subprocess.run(['git', 'push', 'origin', 'main'], cwd=BASE_DIR, capture_output=True, timeout=30)
         if result.returncode == 0:
             return True, '已同步到 GitHub'
         else:
+            # 如果 commit 没有变更但 push 也失败，检查是否已经同步
+            if b'nothing to commit' in commit.stderr or b'nothing to commit' in commit.stdout:
+                return True, '文件已是最新状态'
             return True, '文件已保存，但推送失败，请手动 git push'
     except Exception as e:
         return True, f'文件已保存，推送异常：{e}'
@@ -64,6 +68,8 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             full_path = os.path.join(BASE_DIR, filepath)
             if os.path.exists(full_path):
                 os.remove(full_path)
+                # 使用 git rm 确保索引中删除记录
+                subprocess.run(['git', 'rm', '-f', '--cached', filepath], cwd=BASE_DIR, capture_output=True, timeout=10)
                 ok, msg = git_push(filepath, message)
                 self.send_json({'ok': ok, 'msg': msg})
             else:
