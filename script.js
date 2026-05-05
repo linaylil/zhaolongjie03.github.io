@@ -188,7 +188,6 @@ console.log('👋 赵龙杰的个人网站已加载完成！');
 const ADMIN_PASSWORD = '20171230zljsl';
 const GITHUB_REPO = 'linaylil/zhaolongjie03.github.io';
 const GITHUB_BRANCH = 'main';
-let GITHUB_TOKEN = localStorage.getItem('githubToken') || '';
 let isAdmin = localStorage.getItem('adminMode') === 'true';
 
 function applyAdminMode() {
@@ -242,14 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pwd === ADMIN_PASSWORD) {
           isAdmin = true;
           localStorage.setItem('adminMode', 'true');
-          // 首次进入，提示配置 Token
-          if (!GITHUB_TOKEN) {
-            const token = prompt('请输入 GitHub Personal Access Token（用于同步照片到仓库）：');
-            if (token) {
-              GITHUB_TOKEN = token;
-              localStorage.setItem('githubToken', token);
-            }
-          }
           applyAdminMode();
           showToast('✅ 已进入管理员模式');
         } else if (pwd !== null) {
@@ -315,31 +306,25 @@ function updateResumeUI(dataUrl) {
 }
 
 // ===== GitHub API: Upload file to repo =====
+// ===== GitHub API: Upload file via SSH (local git) =====
+// 照片上传改为本地 git 方式，不再需要 Token
 async function uploadToGitHub(filename, base64Content, commitMsg) {
-  if (!GITHUB_TOKEN) {
-    showToast('❌ 未配置 GitHub Token，请重新进入管理员模式');
-    return false;
-  }
-  const url = `https://api.github.com/repos/${GITHUB_REPO}/contents/photos/${filename}`;
-  // 检查文件是否已存在（获取 SHA）
-  let sha = null;
+  // 通过本地 git 命令保存文件并推送
   try {
-    const check = await fetch(url, { headers: { Authorization: `token ${GITHUB_TOKEN}` } });
-    if (check.ok) {
-      const data = await check.json();
-      sha = data.sha;
-    }
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename, content: base64Content, message: commitMsg, path: `photos/${filename}` })
+    });
+    if (response.ok) return true;
   } catch(e) {}
 
-  const body = { message: commitMsg, content: base64Content, branch: GITHUB_BRANCH };
-  if (sha) body.sha = sha;
-
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: { Authorization: `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  return res.ok;
+  // 本地 API 不可用时，降级：直接保存到 localStorage 并提示用户手动推送
+  const savedPhotos = JSON.parse(localStorage.getItem('pendingPhotos') || '[]');
+  savedPhotos.push({ filename, content: base64Content, message: commitMsg });
+  localStorage.setItem('pendingPhotos', JSON.stringify(savedPhotos));
+  showToast('📸 照片已暂存，请在本机运行 git push 同步到 GitHub');
+  return true;
 }
 
 // ===== Load gallery photos from GitHub =====
