@@ -281,7 +281,7 @@ async function uploadToServer(filepath, base64Content, commitMsg) {
   if (filepath === '__update_content__') {
     try {
       const decoded = decodeURIComponent(escape(atob(base64Content)));
-      const response = await fetch(LOCAL_API + '/api/update-content', {
+      const response = await fetch(API_BASE + '/update-content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: decoded, message: commitMsg })
@@ -294,7 +294,7 @@ async function uploadToServer(filepath, base64Content, commitMsg) {
     }
   }
   try {
-    const response = await fetch(LOCAL_API + '/api/upload', {
+    const response = await fetch(API_BASE + '/upload', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path: filepath, content: base64Content, message: commitMsg })
@@ -310,7 +310,7 @@ async function uploadToServer(filepath, base64Content, commitMsg) {
 // ===== Delete file via local server =====
 async function deleteFromServer(filepath, commitMsg) {
   try {
-    const response = await fetch(LOCAL_API + '/api/delete', {
+    const response = await fetch(API_BASE + '/delete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ path: filepath, message: commitMsg })
