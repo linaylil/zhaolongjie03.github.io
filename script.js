@@ -200,15 +200,12 @@ function applyAdminMode() {
       if (!isAdmin) hint.style.display = 'none';
     }
   }
-  const resumeUploadBtn = document.getElementById('resumeUploadBtn');
-  if (resumeUploadBtn) resumeUploadBtn.style.display = isAdmin ? 'inline-flex' : 'none';
   const photoUploadArea = document.getElementById('photoUploadArea');
   if (photoUploadArea) photoUploadArea.style.display = isAdmin ? 'block' : 'none';
   const adminIndicator = document.getElementById('adminIndicator');
   if (adminIndicator) adminIndicator.textContent = isAdmin ? '🔓 管理员模式' : '🔒 访客模式';
   // Admin-only features: delete & edit
   if (isAdmin) {
-    addResumeDeleteBtn();
     addPhotoDeleteBtns();
     enableExperienceEdit();
   }
@@ -255,30 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 加载 GitHub 上的画廊照片
   loadGalleryPhotos();
-
-  // 恢复已保存简历（优先从 GitHub 文件读取）
-  const savedResume = localStorage.getItem('resumePDF');
-  if (savedResume) {
-    updateResumeUI(savedResume);
-  } else {
-    // 通过 GitHub API 查找 resume 目录下的 PDF
-    fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/resume?ref=${GITHUB_BRANCH}`)
-      .then(r => r.json())
-      .then(files => {
-        const pdf = files.find(f => f.name.endsWith('.pdf'));
-        if (pdf) {
-          localStorage.setItem('resumeFileName', pdf.name);
-          fetch(pdf.download_url).then(r => r.blob()).then(b => {
-            const reader = new FileReader();
-            reader.onload = e => {
-              localStorage.setItem('resumePDF', e.target.result);
-              updateResumeUI(e.target.result);
-            };
-            reader.readAsDataURL(b);
-          });
-        }
-      }).catch(() => {});
-  }
 });
 
 function showToast(msg) {
@@ -293,36 +266,6 @@ function showToast(msg) {
   toast.style.opacity = '1';
   clearTimeout(toast._timer);
   toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 2500);
-}
-
-// ===== Resume PDF =====
-function updateResumeUI(dataUrl) {
-  const resumeSection = document.getElementById('resumeSection');
-  const resumeViewBtn = document.getElementById('resumeViewBtn');
-  const resumeDownloadBtn = document.getElementById('resumeDownloadBtn');
-  const resumeEmpty = document.getElementById('resumeEmpty');
-  const heroBtnResume = document.getElementById('heroBtnResume');
-  if (resumeSection) resumeSection.style.display = 'flex';
-  if (resumeEmpty) resumeEmpty.style.display = 'none';
-  // hero 区显示查看简历按钮
-  if (heroBtnResume) {
-    heroBtnResume.style.display = 'inline-flex';
-    heroBtnResume.onclick = () => {
-      const win = window.open();
-      win.document.write(`<iframe src="${dataUrl}" style="width:100%;height:100vh;border:none;"></iframe>`);
-    };
-  }
-  if (resumeViewBtn) {
-    resumeViewBtn.onclick = () => {
-      const win = window.open();
-      win.document.write(`<iframe src="${dataUrl}" style="width:100%;height:100vh;border:none;"></iframe>`);
-    };
-  }
-  if (resumeDownloadBtn) {
-    resumeDownloadBtn.href = dataUrl;
-    resumeDownloadBtn.download = '赵龙杰-简历.pdf';
-  }
-  if (isAdmin) addResumeDeleteBtn();
 }
 
 // ===== Local server base URL =====
@@ -468,7 +411,7 @@ async function loadGalleryPhotos() {
       div.setAttribute('data-github-file', file.name);
       div.innerHTML = `
         <img src="${file.download_url}" alt="生活照片" style="width:100%;height:100%;object-fit:cover;">
-        <div class="photo-overlay"><p>生活照片</p></div>
+        <div class="photo-overlay"><p>我的照片</p></div>
       `;
       grid.appendChild(div);
     });
@@ -499,52 +442,6 @@ if (galleryUpload) {
     setTimeout(() => loadGalleryPhotos(), 3000);
     e.target.value = '';
   });
-}
-
-// ===== Resume Upload =====
-const resumeUpload = document.getElementById('resumeUpload');
-if (resumeUpload) {
-  resumeUpload.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (evt) => {
-      const dataUrl = evt.target.result;
-      const base64 = dataUrl.split(',')[1];
-      const resumeName = localStorage.getItem('resumeFileName') || '赵龙杰-简历.pdf';
-      const ok = await uploadToServer(`resume/${resumeName}`, base64, 'Add resume PDF');
-      if (ok) {
-        localStorage.setItem('resumePDF', dataUrl);
-        updateResumeUI(dataUrl);
-      }
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
-  });
-}
-
-// ===== Delete Resume Button =====
-function addResumeDeleteBtn() {
-  const resumeSection = document.getElementById('resumeSection');
-  if (!resumeSection || document.getElementById('resumeDeleteBtn')) return;
-  const btn = document.createElement('button');
-  btn.id = 'resumeDeleteBtn';
-  btn.className = 'btn';
-  btn.style.cssText = 'background:#dc2626;color:white;padding:8px 18px;border-radius:50px;font-size:0.82rem;cursor:pointer;border:none;box-shadow:0 4px 12px rgba(220,38,38,0.3);margin-left:0.5rem;';
-  btn.innerHTML = '<i class="fas fa-trash" style="margin-right:4px;"></i>删除简历';
-  btn.onclick = async () => {
-    if (!confirm('确定要删除简历吗？')) return;
-    const resumeName = localStorage.getItem('resumeFileName') || '赵龙杰-简历.pdf';
-    const ok = await deleteFromServer(`resume/${resumeName}`, 'Delete resume PDF');
-    if (ok) {
-      localStorage.removeItem('resumePDF');
-      resumeSection.style.display = 'none';
-      document.getElementById('resumeEmpty').style.display = '';
-      document.getElementById('heroBtnResume').style.display = 'none';
-      btn.remove();
-    }
-  };
-  resumeSection.appendChild(btn);
 }
 
 // ===== Photo Delete Buttons =====
