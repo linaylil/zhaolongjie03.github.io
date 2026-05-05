@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>赵龙杰 - 个人主页</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">赵龙杰</div>
+      <ul class="nav-links">
+        <li><a href="#about">关于我</a></li>
+        <li><a href="#experience">实习经历</a></li>
+        <li><a href="#education">教育背景</a></li>
+        <li><a href="#skills">个人技能</a></li>
+        <li><a href="#hobbies">兴趣爱好</a></li>
+        <li><a href="#contact">联系我</a></li>
+      </ul>
+      <div class="nav-toggle" id="navToggle">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="about">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-photo-wrapper">
+        <div class="hero-photo">
+          <img src="photo.jpg" alt="赵龙杰" id="profilePhoto" onerror="this.style.display='none'; document.getElementById('photoPlaceholder').style.display='flex';" />
+          <div class="photo-placeholder" id="photoPlaceholder">
+            <i class="fas fa-user"></i>
+          </div>
+        </div>
+        <div class="hero-badge">产品经理</div>
+      </div>
+      <div class="hero-text">
+        <h1 class="hero-name">赵龙杰</h1>
+        <p class="hero-subtitle">产品经理 · 数据分析师 · 大模型应用探索者</p>
+        <p class="hero-desc">
+          硕士在读（应用统计，云南大学），具备扎实的数据分析能力与产品设计思维。
+          曾在快手、百度、理想汽车、京东等头部企业实习，擅长商业化流量策略、大模型产品落地与跨部门协同推进。
+        </p>
+        <div class="hero-tags">
+          <span class="tag"><i class="fas fa-brain"></i> 大模型技术</span>
+          <span class="tag"><i class="fas fa-chart-bar"></i> 数据分析</span>
+          <span class="tag"><i class="fas fa-lightbulb"></i> 产品设计</span>
+          <span class="tag"><i class="fas fa-users"></i> 跨部门协同</span>
+        </div>
+        <div class="hero-btns">
+          <a href="#experience" class="btn btn-primary">查看经历</a>
+          <a href="#contact" class="btn btn-outline">联系我</a>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-dot"></div>
+    </div>
+  </section>
+
+  <!-- Experience Section -->
+  <section class="section" id="experience">
+    <div class="container">
+      <h2 class="section-title">实习经历</h2>
+      <p class="section-subtitle">在头部企业积累丰富的产品与数据实战经验</p>
+      <div class="timeline">
+
+        <!-- 快手 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <div class="timeline-dot kuaishou-dot"></div>
+            <div class="timeline-line"></div>
+          </div>
+          <div class="timeline-card">
+            <div class="card-header">
+              <div class="company-info">
+                <div class="company-logo kuaishou">
+                  <i class="fas fa-play-circle"></i>
+                </div>
+                <div>
+                  <h3 class="company-name">快手 · 商业化流量产品中心</h3>
+                  <span class="position-tag">流量策略产品经理</span>
+                </div>
+              </div>
+              <span class="date-badge">2026.01 - 至今</span>
+            </div>
+            <p class="card-desc">
+              负责快手流化场域广告流量策略。针对春节后大盘 DAU 流失问题，改变以往单列一刀切降广的传统做法，从三个维度寻找解法：大盘层面治理广告生态提升体感、微观层面针对人群做精准干预、同时联合其他业务线跨部门找增量。
+            </p>
+            <div class="achievements">
+              <h4><i class="fas fa-trophy"></i> 核心成果</h4>
+              <ul>
+                <li>宏观生态治理：全局开屏 RTB 广告屏蔽策略，有效阻断用户流失，实现大盘 <strong>时长 +0.012%</strong></li>
+                <li>素材与外跳治理：精细化流量调控，DAU <strong>+0.017%</strong>、时长 <strong>+0.032%</strong></li>
+                <li>广告多样性治理：打击精排中间行业非 CPM 首位广告，一、二级业广告重复率分别显著下降 <strong>4.142% 和 4.793%</strong></li>
+                <li>双列场景调试：实现双列 <strong>时长 +0.842%</strong>、DAU <strong>+0.043%</strong></li>
+                <li>跨部门协同：激励广告转化为促活抓手，DAU <strong>+0.056%</strong>、时长 <strong>+0.079%</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 百度 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <div class="timeline-dot baidu-dot"></div>
+            <div class="timeline-line"></div>
+          </div>
+          <div class="timeline-card">
+            <div class="card-header">
+              <div class="company-info">
+                <div class="company-logo baidu">
+                  <i class="fas fa-paw"></i>
+                </div>
+                <div>
+                  <h3 class="company-name">百度 · 应用模型平台部</h3>
+                  <span class="position-tag">大模型技术产品经理</span>
+                </div>
+              </div>
+              <span class="date-badge">2025.07 - 2026.01</span>
+            </div>
+            <p class="card-desc">
+              负责跨模态语音交互大模型文小言的全链路效果迭代。深入模型内核，构建策略制定、数据生产、自动化评估、数据飞轮的闭环体系，持续提升端到端交互体验与核心业务指标。
+            </p>
+            <div class="achievements">
+              <h4><i class="fas fa-trophy"></i> 核心成果</h4>
+              <ul>
+                <li>品质评估与策略闭环：搭建覆盖业务逻辑7维评估体系，关键场景准确率 <strong>优于对标竞品 20%</strong></li>
+                <li>数据生产与指标提升：主导 SFT/DPO 数据构造及 RAG 检索策略优化，冗余回复、非口语化及引用错误率下降 <strong>85%+</strong>，线上相关 Badcase 率降低 <strong>90%+</strong></li>
+                <li>自动化评估体系：人力评估成本降低 <strong>80%</strong>，评估效率提升 <strong>10倍</strong>，单轮评估周期由 <strong>1天缩短至1小时</strong></li>
+                <li>数据飞轮闭环：Badcase 修复率 <strong>100%</strong>，修复时长从 <strong>1周缩短至4小时</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 理想汽车 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <div class="timeline-dot lixiang-dot"></div>
+            <div class="timeline-line"></div>
+          </div>
+          <div class="timeline-card">
+            <div class="card-header">
+              <div class="company-info">
+                <div class="company-logo lixiang">
+                  <i class="fas fa-car"></i>
+                </div>
+                <div>
+                  <h3 class="company-name">理想汽车 · 企业智能</h3>
+                  <span class="position-tag">产品经理</span>
+                </div>
+              </div>
+              <span class="date-badge">2025.03 - 2025.07</span>
+            </div>
+            <p class="card-desc">
+              负责理想汽车采购成本系统和成本管理工作台系统的需求调研、产品设计、产品开发、产品测试的产品开发全流程。主导基价联动&采购补差、降本管理模块的产品全流程。
+            </p>
+            <div class="achievements">
+              <h4><i class="fas fa-trophy"></i> 核心成果</h4>
+              <ul>
+                <li>基价联动&采购补差：原材料价格与汇率波动的自动追踪与更新，减少项目人力成本 <strong>5人/天</strong></li>
+                <li>降本管理-指标体系建设：搭建覆盖 <strong>100+</strong> 采购人员使用的降本数据看板</li>
+                <li>AI场景落地：探索 AI 智能分析在成本数据中的应用，自动识别异常数据</li>
+                <li>权限与安全：设计基于 RBAC 的多维度数据权限体系，线上线下流程线上化，减少统计人力成本 <strong>5人/天</strong></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 京东 -->
+        <div class="timeline-item">
+          <div class="timeline-marker">
+            <div class="timeline-dot jd-dot"></div>
+          </div>
+          <div class="timeline-card">
+            <div class="card-header">
+              <div class="company-info">
+                <div class="company-logo jd">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div>
+                  <h3 class="company-name">京东 · 京东零售</h3>
+                  <span class="position-tag">数据分析师</span>
+                </div>
+              </div>
+              <span class="date-badge">2024.09 - 2024.11</span>
+            </div>
+            <p class="card-desc">
+              负责业务线的数据仓库维护与报表体系建设。通过 ETL 流程监控与复杂 SQL 数据提取，保障核心业务数据的准确性与时效性，为运营团队提供基于财务与流量视角的决策支持。
+            </p>
+            <div class="achievements">
+              <h4><i class="fas fa-trophy"></i> 核心成果</h4>
+              <ul>
+                <li>数据流维护与质量保障：负责核心业务数据的 ETL 推送流程监控与异常处理，保障数据仓库更新的时效性与准确性</li>
+                <li>复杂数据提取与支持：熟练运用 SQL（开窗/聚合）从底层提取清洗数据，构建财务经营分析报表（收益/成本/现金流）</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Education Section -->
+  <section class="section section-alt" id="education">
+    <div class="container">
+      <h2 class="section-title">教育背景</h2>
+      <p class="section-subtitle">扎实的统计学基础，支撑数据驱动决策</p>
+      <div class="edu-cards">
+        <div class="edu-card">
+          <div class="edu-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <div class="edu-content">
+            <h3>云南大学</h3>
+            <p class="edu-degree">应用统计 · 硕士</p>
+            <p class="edu-date"><i class="fas fa-calendar-alt"></i> 2023.09 - 2026.06</p>
+          </div>
+          <div class="edu-badge">在读</div>
+        </div>
+        <div class="edu-card">
+          <div class="edu-icon">
+            <i class="fas fa-university"></i>
+          </div>
+          <div class="edu-content">
+            <h3>绍兴大学</h3>
+            <p class="edu-degree">应用统计 · 本科</p>
+            <p class="edu-date"><i class="fas fa-calendar-alt"></i> 2019.09 - 2023.06</p>
+          </div>
+          <div class="edu-badge graduated">已毕业</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills Section -->
+  <section class="section" id="skills">
+    <div class="container">
+      <h2 class="section-title">个人技能</h2>
+      <p class="section-subtitle">技术 × 数据 × 产品的复合能力体系</p>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <div class="skill-icon ai">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3>大模型技术</h3>
+          <p>深刻理解 LLM 原理，精通 RAG 架构及 SFT/DPO 微调全流程；精通 Prompt Engineering 和 Workflow 的搭建。</p>
+          <div class="skill-tags">
+            <span>LLM</span><span>RAG</span><span>SFT/DPO</span><span>Prompt Engineering</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon data">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3>数据与评测</h3>
+          <p>精通 SQL 及 Python 进行数据清洗、日志挖掘与漏斗归因分析；具备完整的 A/B 实验设计、监控与收益评估能力；擅长 Excel 建模与多维回归分析。</p>
+          <div class="skill-tags">
+            <span>SQL</span><span>Python</span><span>A/B实验</span><span>Excel建模</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon design">
+            <i class="fas fa-pencil-ruler"></i>
+          </div>
+          <h3>产品与设计</h3>
+          <p>精通 Axure/Figma/Xmind 进行高保真原型与流程设计；具备扎实的 B 端系统设计能力及 PRD 撰写能力。</p>
+          <div class="skill-tags">
+            <span>Axure</span><span>Figma</span><span>Xmind</span><span>PRD</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon tools">
+            <i class="fas fa-tools"></i>
+          </div>
+          <h3>工具与管理</h3>
+          <p>熟练使用 Coze/Dify/LangChain 搭建智能体；熟悉百度千帆/火山方舟等 MaaS 平台。</p>
+          <div class="skill-tags">
+            <span>Coze</span><span>Dify</span><span>LangChain</span><span>千帆/火山方舟</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon general">
+            <i class="fas fa-globe"></i>
+          </div>
+          <h3>通用能力</h3>
+          <p>CET-6，具备极强的跨部门协作与项目推进能力，善于在多目标冲突中统筹资源拿结果。</p>
+          <div class="skill-tags">
+            <span>CET-6</span><span>跨部门协作</span><span>项目管理</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hobbies Section -->
+  <section class="section section-alt" id="hobbies">
+    <div class="container">
+      <h2 class="section-title">兴趣爱好</h2>
+      <p class="section-subtitle">工作之外，保持对生活的热爱</p>
+      <div class="hobbies-grid">
+        <div class="hobby-card">
+          <div class="hobby-icon">
+            <i class="fas fa-basketball-ball"></i>
+          </div>
+          <h3>篮球</h3>
+          <p>热爱篮球运动，享受团队配合与竞技的乐趣</p>
+        </div>
+        <div class="hobby-card">
+          <div class="hobby-icon">
+            <i class="fas fa-music"></i>
+          </div>
+          <h3>音乐</h3>
+          <p>喜欢在工作间隙聆听音乐，感受不同风格带来的情绪共鸣</p>
+        </div>
+        <div class="hobby-card">
+          <div class="hobby-icon">
+            <i class="fas fa-book"></i>
+          </div>
+          <h3>阅读</h3>
+          <p>广泛阅读产品、商业与科技书籍，持续拓展认知边界</p>
+        </div>
+        <div class="hobby-card">
+          <div class="hobby-icon">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h3>AI探索</h3>
+          <p>持续关注大模型前沿进展，热衷于探索 AI 在产品场景中的创新应用</p>
+        </div>
+        <div class="hobby-card">
+          <div class="hobby-icon">
+            <i class="fas fa-hiking"></i>
+          </div>
+          <h3>户外运动</h3>
+          <p>喜欢徒步、爬山，在自然中放松心情、清醒思考</p>
+        </div>
+        <div class="hobby-card">
+          <div class="hobby-icon">
+            <i class="fas fa-camera"></i>
+          </div>
+          <h3>摄影</h3>
+          <p>用镜头记录生活中的美好瞬间，培养对视觉美学的感知</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Photos Section -->
+  <section class="section" id="photos">
+    <div class="container">
+      <h2 class="section-title">我的照片</h2>
+      <p class="section-subtitle">记录生活，留存美好</p>
+      <div class="photos-grid">
+        <div class="photo-item main-photo">
+          <img src="photo.jpg" alt="赵龙杰" onerror="this.parentElement.classList.add('no-photo')" />
+          <div class="photo-overlay">
+            <p>个人照片</p>
+          </div>
+        </div>
+        <div class="photo-item photo-placeholder-card">
+          <div class="placeholder-content">
+            <i class="fas fa-image"></i>
+            <p>生活照片</p>
+            <small>敬请期待</small>
+          </div>
+        </div>
+        <div class="photo-item photo-placeholder-card">
+          <div class="placeholder-content">
+            <i class="fas fa-image"></i>
+            <p>生活照片</p>
+            <small>敬请期待</small>
+          </div>
+        </div>
+        <div class="photo-item photo-placeholder-card">
+          <div class="placeholder-content">
+            <i class="fas fa-image"></i>
+            <p>生活照片</p>
+            <small>敬请期待</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="section section-contact" id="contact">
+    <div class="container">
+      <h2 class="section-title light">联系我</h2>
+      <p class="section-subtitle light">欢迎交流合作，期待与你连接</p>
+      <div class="contact-cards">
+        <a class="contact-card" href="tel:13295134778">
+          <div class="contact-icon"><i class="fas fa-phone"></i></div>
+          <div class="contact-info">
+            <h4>手机 / 微信</h4>
+            <p>13295134778</p>
+          </div>
+        </a>
+        <a class="contact-card" href="mailto:1059125638@qq.com">
+          <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+          <div class="contact-info">
+            <h4>邮箱</h4>
+            <p>1059125638@qq.com</p>
+          </div>
+        </a>
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fab fa-weixin"></i></div>
+          <div class="contact-info">
+            <h4>微信</h4>
+            <p>13295134778</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 赵龙杰 &nbsp;·&nbsp; 用数据驱动决策，用产品创造价值</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
