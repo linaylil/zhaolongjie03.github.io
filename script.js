@@ -412,10 +412,8 @@ if (resumeUpload) {
     reader.onload = async (evt) => {
       const dataUrl = evt.target.result;
       const base64 = dataUrl.split(',')[1];
-      // 保存到 resume/ 文件夹并 git push
       const ok = await uploadToServer('resume/赵龙杰-简历.pdf', base64, 'Add resume PDF');
       if (ok) {
-        // 同时存到 localStorage 供本地预览
         localStorage.setItem('resumePDF', dataUrl);
         updateResumeUI(dataUrl);
       }
@@ -424,3 +422,199 @@ if (resumeUpload) {
     e.target.value = '';
   });
 }
+
+// ===== Delete file via local server =====
+async function deleteFromServer(filepath, commitMsg) {
+  try {
+    const response = await fetch('/api/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: filepath, message: commitMsg })
+    });
+    const result = await response.json();
+    if (result.ok) {
+      showToast(`✅ ${result.msg}`);
+      return true;
+    } else {
+      showToast(`❌ 删除失败：${result.error || '未知错误'}`);
+      return false;
+    }
+  } catch(e) {
+    showToast('❌ 无法连接本地服务器');
+    return false;
+  }
+}
+
+// ===== Delete Resume =====
+function addResumeDeleteBtn() {
+  const resumeSection = document.getElementById('resumeSection');
+  if (!resumeSection || document.getElementById('resumeDeleteBtn')) return;
+  const btn = document.createElement('button');
+  btn.id = 'resumeDeleteBtn';
+  btn.className = 'btn';
+  btn.style.cssText = 'background:#dc2626;color:white;padding:8px 18px;border-radius:50px;font-size:0.82rem;cursor:pointer;border:none;box-shadow:0 4px 12px rgba(220,38,38,0.3);margin-left:0.5rem;';
+  btn.innerHTML = '<i class="fas fa-trash" style="margin-right:4px;"></i>删除简历';
+  btn.onclick = async () => {
+    if (!confirm('确定要删除简历吗？')) return;
+    const ok = await deleteFromServer('resume/赵龙杰-简历.pdf', 'Delete resume PDF');
+    if (ok) {
+      localStorage.removeItem('resumePDF');
+      document.getElementById('resumeSection').style.display = 'none';
+      document.getElementById('resumeEmpty').style.display = '';
+      document.getElementById('heroBtnResume').style.display = 'none';
+      btn.remove();
+    }
+  };
+  resumeSection.appendChild(btn);
+}
+
+// ===== Photo Delete Buttons (admin only) =====
+function addPhotoDeleteBtns() {
+  document.querySelectorAll('.photo-item[data-github-file]').forEach(item => {
+    if (item.querySelector('.photo-delete-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'photo-delete-btn';
+    btn.style.cssText = 'position:absolute;top:8px;right:8px;background:rgba(220,38,38,0.85);color:white;border:none;border-radius:50%;width:28px;height:28px;font-size:0.75rem;cursor:pointer;z-index:10;display:none;align-items:center;justify-content:center;transition:opacity 0.2s;';
+    btn.innerHTML = '<i class="fas fa-times"></i>';
+    const filename = item.getAttribute('data-github-file');
+    btn.onclick = async (e) => {
+      e.stopPropagation();
+      if (!confirm('确定要删除这张照片吗？')) return;
+      const ok = await deleteFromServer(`photos/${filename}`, `Delete photo: ${filename}`);
+      if (ok) {
+        item.remove();
+        // 如果没有照片了，显示占位符
+        const remaining = document.querySelectorAll('.photo-item[data-github-file]');
+        if (remaining.length === 0) {
+          ['placeholderSlot1','placeholderSlot2','placeholderSlot3'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = '';
+          });
+        }
+      }
+    };
+    item.appendChild(btn);
+    item.addEventListener('mouseenter', () => { if (isAdmin) btn.style.display = 'flex'; });
+    item.addEventListener('mouseleave', () => { btn.style.display = 'none'; });
+  });
+}
+
+// ===== Experience Inline Edit (admin mode) =====
+function enableExperienceEdit() {
+  document.querySelectorAll('.timeline-card').forEach(card => {
+    if (card.querySelector('.edit-card-btn')) return;
+    // 添加编辑按钮
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-card-btn';
+    editBtn.style.cssText = 'position:absolute;top:12px;right:12px;background:var(--primary);color:white;border:none;border-radius:50%;width:30px;height:30px;font-size:0.78rem;cursor:pointer;z-index:5;display:none;align-items:center;justify-content:center;';
+    editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+    editBtn.onclick = (e) => {
+      e.stopPropagation();
+      makeCardEditable(card);
+    };
+    card.style.position = 'relative';
+    card.appendChild(editBtn);
+    card.addEventListener('mouseenter', () => { if (isAdmin) editBtn.style.display = 'flex'; });
+    card.addEventListener('mouseleave', () => { editBtn.style.display = 'none'; });
+  });
+}
+
+function makeCardEditable(card) {
+  if (card.classList.contains('editing')) return;
+  card.classList.add('editing');
+  
+  // 让 card-desc 和 achievements 里的文本可编辑
+  const desc = card.querySelector('.card-desc');
+  const achievements = card.querySelector('.achievements');
+  
+  if (desc) {
+    desc.contentEditable = 'true';
+    desc.style.cssText += 'outline:2px dashed var(--primary);outline-offset:4px;background:rgba(37,99,235,0.05);border-radius:8px;padding:8px;';
+  }
+  if (achievements) {
+    achievements.querySelectorAll('li').forEach(li => {
+      li.contentEditable = 'true';
+      li.style.cssText += 'outline:1px dashed rgba(37,99,235,0.4);outline-offset:2px;background:rgba(37,99,235,0.03);border-radius:4px;margin:2px 0;';
+    });
+  }
+  
+  // 添加保存按钮
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'btn';
+  saveBtn.style.cssText = 'background:#059669;color:white;margin-top:1rem;padding:8px 20px;border-radius:50px;font-size:0.82rem;border:none;cursor:pointer;';
+  saveBtn.innerHTML = '<i class="fas fa-check" style="margin-right:4px;"></i>保存修改';
+  saveBtn.onclick = async () => {
+    // 取消可编辑状态
+    if (desc) {
+      desc.contentEditable = 'false';
+      desc.style.outline = '';
+      desc.style.background = '';
+    }
+    if (achievements) {
+      achievements.querySelectorAll('li').forEach(li => {
+        li.contentEditable = 'false';
+        li.style.outline = '';
+        li.style.background = '';
+      });
+    }
+    saveBtn.remove();
+    card.classList.remove('editing');
+    
+    // 更新 index.html 并 git push
+    const htmlContent = document.documentElement.outerHTML;
+    const fullHtml = '<!DOCTYPE html>\n<html' + htmlContent.substring(htmlContent.indexOf('<html') + 5);
+    // Actually, better to get the full HTML properly
+    const doctype = '<!DOCTYPE html>\n';
+    const finalHtml = doctype + document.documentElement.outerHTML;
+    const encoder = new TextEncoder();
+    const base64 = btoa(unescape(encodeURIComponent(finalHtml)));
+    
+    showToast('⏳ 正在保存修改...');
+    const ok = await uploadToServer('__update_content__', base64, 'Update experience content via admin');
+    if (ok) {
+      // Need special handling - use update-content API
+    }
+  };
+  card.appendChild(saveBtn);
+}
+
+// Override uploadToServer to handle content updates
+const _originalUploadToServer = uploadToServer;
+async function uploadToServer(filepath, base64Content, commitMsg) {
+  if (filepath === '__update_content__') {
+    // Use the update-content API
+    try {
+      // Decode base64 back to string
+      const decoded = decodeURIComponent(escape(atob(base64Content)));
+      const response = await fetch('/api/update-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: decoded, message: commitMsg })
+      });
+      const result = await response.json();
+      if (result.ok) {
+        showToast(`✅ ${result.msg}`);
+        return true;
+      } else {
+        showToast(`❌ 保存失败：${result.error || '未知错误'}`);
+        return false;
+      }
+    } catch(e) {
+      showToast('❌ 无法连接本地服务器');
+      return false;
+    }
+  }
+  return _originalUploadToServer(filepath, base64Content, commitMsg);
+}
+
+// ===== Apply admin features on mode change =====
+const _originalApplyAdminMode = applyAdminMode;
+function applyAdminMode() {
+  _originalApplyAdminMode();
+  if (isAdmin) {
+    addResumeDeleteBtn();
+    addPhotoDeleteBtns();
+    enableExperienceEdit();
+  }
+}
+
