@@ -126,9 +126,14 @@ if (heroPhotoContainer) {
 }
 
 if (photoUpload) {
-  photoUpload.addEventListener('change', (e) => {
-    const file = e.target.files[0];
+  photoUpload.addEventListener('change', async (e) => {
+    let file = e.target.files[0];
     if (!file) return;
+    // HEIC → JPEG
+    const heicBlob = await convertHeicFile(file);
+    if (heicBlob) {
+      file = new File([heicBlob], file.name.replace(/\.heic$/i, '.jpg'), { type: 'image/jpeg' });
+    }
     const reader = new FileReader();
     reader.onload = (evt) => {
       const dataUrl = evt.target.result;
@@ -325,6 +330,42 @@ async function uploadToGitHub(filename, base64Content, commitMsg) {
   return uploadToServer(`photos/${filename}`, base64Content, commitMsg);
 }
 
+// ===== HEIC support =====
+function loadHeic2Any() {
+  return new Promise((resolve) => {
+    if (window.heic2any) return resolve(true);
+    const s = document.createElement('script');
+    s.src = 'https://cdn.bootcdn.net/ajax/libs/heic2any/0.0.4/heic2any.min.js';
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.head.appendChild(s);
+  });
+}
+
+async function convertHeicImage(imgEl, heicUrl) {
+  const ok = await loadHeic2Any();
+  if (!ok) { imgEl.alt = 'HEIC格式不支持'; return; }
+  try {
+    const resp = await fetch(heicUrl);
+    const blob = await resp.blob();
+    const converted = await heic2any({ blob, toType: 'image/jpeg', quality: 0.92 });
+    const jpgBlob = Array.isArray(converted) ? converted[0] : converted;
+    imgEl.src = URL.createObjectURL(jpgBlob);
+  } catch(e) {
+    imgEl.alt = 'HEIC转换失败';
+  }
+}
+
+async function convertHeicFile(file) {
+  if (!/\.heic$/i.test(file.name) && !/heic/i.test(file.type)) return null;
+  const ok = await loadHeic2Any();
+  if (!ok) return null;
+  try {
+    const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 });
+    return Array.isArray(converted) ? converted[0] : converted;
+  } catch(e) { return null; }
+}
+
 // ===== EXIF rotation fix =====
 function fixImageOrientation(file, callback) {
   const reader = new FileReader();
@@ -429,12 +470,18 @@ if (galleryUpload) {
     showToast(`⏳ 正在上传 ${files.length} 张照片...`);
     let successCount = 0;
     for (const file of files) {
+      let processFile = file;
+      // HEIC → JPEG 转换
+      const heicBlob = await convertHeicFile(file);
+      if (heicBlob) {
+        processFile = new File([heicBlob], file.name.replace(/\.heic$/i, '.jpg'), { type: 'image/jpeg' });
+      }
       const base64 = await new Promise(resolve => {
-        fixImageOrientation(file, (fixedDataUrl) => {
+        fixImageOrientation(processFile, (fixedDataUrl) => {
           resolve(fixedDataUrl.split(',')[1]);
         });
       });
-      const filename = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      const filename = `${Date.now()}_${processFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
       const ok = await uploadToGitHub(filename, base64, `Add gallery photo: ${filename}`);
       if (ok) successCount++;
     }
