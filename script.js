@@ -255,10 +255,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // 加载 GitHub 上的画廊照片
   loadGalleryPhotos();
 
-  // 恢复已保存简历
+  // 恢复已保存简历（优先从 GitHub 文件读取）
   const savedResume = localStorage.getItem('resumePDF');
   if (savedResume) {
     updateResumeUI(savedResume);
+  } else {
+    // 尝试从 GitHub Pages 加载简历
+    fetch('resume/赵龙杰-简历.pdf').then(r => {
+      if (r.ok) {
+        const blob = r.blob();
+        blob.then(b => {
+          const reader = new FileReader();
+          reader.onload = e => {
+            localStorage.setItem('resumePDF', e.target.result);
+            updateResumeUI(e.target.result);
+          };
+          reader.readAsDataURL(b);
+        });
+      }
+    }).catch(() => {});
   }
 });
 
@@ -306,34 +321,42 @@ function updateResumeUI(dataUrl) {
 }
 
 // ===== GitHub API: Upload file to repo =====
-// ===== GitHub API: Upload file via SSH (local git) =====
-// 照片上传改为本地 git 方式，不再需要 Token
-async function uploadToGitHub(filename, base64Content, commitMsg) {
-  // 通过本地 git 命令保存文件并推送
+// ===== File Upload via local server (auto git push via SSH) =====
+async function uploadToServer(filepath, base64Content, commitMsg) {
   try {
     const response = await fetch('/api/upload', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename, content: base64Content, message: commitMsg, path: `photos/${filename}` })
+      body: JSON.stringify({ path: filepath, content: base64Content, message: commitMsg })
     });
-    if (response.ok) return true;
-  } catch(e) {}
-
-  // 本地 API 不可用时，降级：直接保存到 localStorage 并提示用户手动推送
-  const savedPhotos = JSON.parse(localStorage.getItem('pendingPhotos') || '[]');
-  savedPhotos.push({ filename, content: base64Content, message: commitMsg });
-  localStorage.setItem('pendingPhotos', JSON.stringify(savedPhotos));
-  showToast('📸 照片已暂存，请在本机运行 git push 同步到 GitHub');
-  return true;
+    const result = await response.json();
+    if (result.ok) {
+      showToast(`✅ ${result.msg}`);
+      return true;
+    } else {
+      showToast(`❌ 上传失败：${result.error || '未知错误'}`);
+      return false;
+    }
+  } catch(e) {
+    showToast('❌ 无法连接本地服务器，请确保 server.py 正在运行');
+    return false;
+  }
 }
 
-// ===== Load gallery photos from GitHub =====
+// Legacy: kept for compatibility
+async function uploadToGitHub(filename, base64Content, commitMsg) {
+  return uploadToServer(`photos/${filename}`, base64Content, commitMsg);
+}
+
+// ===== Load gallery photos from GitHub Pages =====
 async function loadGalleryPhotos() {
+  // 尝试直接从 GitHub Pages 的 photos 目录加载图片
   try {
+    // 通过 GitHub API 获取文件列表（公开仓库无需 Token）
     const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/photos?ref=${GITHUB_BRANCH}`);
     if (!res.ok) return;
     const files = await res.json();
-    const imageFiles = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name));
+    const imageFiles = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name) && f.name !== '.gitkeep');
     const grid = document.getElementById('photosGrid');
     if (!grid || imageFiles.length === 0) return;
     // 隐藏占位格，插入真实图片
@@ -380,17 +403,24 @@ if (galleryUpload) {
   });
 }
 
-const resumeUpload = document.getElementById('resumeUpload');if (resumeUpload) {
-  resumeUpload.addEventListener('change', (e) => {
+const resumeUpload = document.getElementById('resumeUpload');
+if (resumeUpload) {
+  resumeUpload.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = async (evt) => {
       const dataUrl = evt.target.result;
-      localStorage.setItem('resumePDF', dataUrl);
-      updateResumeUI(dataUrl);
-      showToast('✅ 简历上传成功');
+      const base64 = dataUrl.split(',')[1];
+      // 保存到 resume/ 文件夹并 git push
+      const ok = await uploadToServer('resume/赵龙杰-简历.pdf', base64, 'Add resume PDF');
+      if (ok) {
+        // 同时存到 localStorage 供本地预览
+        localStorage.setItem('resumePDF', dataUrl);
+        updateResumeUI(dataUrl);
+      }
     };
     reader.readAsDataURL(file);
+    e.target.value = '';
   });
 }
