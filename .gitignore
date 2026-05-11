@@ -1,0 +1,5 @@
+# Local development only
+.codeflicker/
+__pycache__/
+*.pyc
+.DS_Store
